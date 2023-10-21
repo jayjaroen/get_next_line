@@ -6,7 +6,7 @@
 /*   By: jjaroens <jjaroens@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 21:47:38 by jjaroens          #+#    #+#             */
-/*   Updated: 2023/10/20 22:08:55 by jjaroens         ###   ########.fr       */
+/*   Updated: 2023/10/21 14:13:32 by jjaroens         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,5 +14,6 @@
 
 char *get_next_line(int fd)
 {
-
+    if (fd == NULL)
+		return (NULL);
 }
