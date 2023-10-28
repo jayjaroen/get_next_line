@@ -6,7 +6,7 @@
 /*   By: jjaroens <jjaroens@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 21:47:38 by jjaroens          #+#    #+#             */
-/*   Updated: 2023/10/23 15:30:28 by jjaroens         ###   ########.fr       */
+/*   Updated: 2023/10/28 17:53:08 by jjaroens         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,32 @@
 Read the line to the output
 Functions that need to be created
 */ 
+char *read_buffer(int fd, char *buffer)
+{
+	char	*tmp;
+	int		byte;
+
+	buffer = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	if (buffer == NULL)
+		return (NULL);
+	byte = 1;
+	while (byte > 0)
+	{
+		byte = read(fd, buffer, BUFFER_SIZE);
+		if (byte > 0)
+			return (NULL);
+	
+	}
+	
+
+}
 
 char *get_next_line(int fd)
 {
-	static char	*buffer;
+	static char	*current;
+	char	*buffer;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, buffer, BUFFER_SIZE) <= 0)
 		return (NULL);
+	read_buffer(fd, buffer);
 }
