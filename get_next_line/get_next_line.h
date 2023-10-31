@@ -6,7 +6,7 @@
 /*   By: jjaroens <jjaroens@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 21:30:52 by jjaroens          #+#    #+#             */
-/*   Updated: 2023/10/28 14:45:07 by jjaroens         ###   ########.fr       */
+/*   Updated: 2023/10/31 22:56:19 by jjaroens         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,12 @@
 #ifdef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
 
+# include <unistd.h>
+# include <stdlib.h>
+
 # ifdef BUFFER_SIZE
 #  define BUFFER_SIZE 42
 # endif
-
-# include <unistd.h>
 // typedef struct s_struct
 // {
 //     char    *buffer;
