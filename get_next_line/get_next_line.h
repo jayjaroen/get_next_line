@@ -6,7 +6,7 @@
 /*   By: jjaroens <jjaroens@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 21:30:52 by jjaroens          #+#    #+#             */
-/*   Updated: 2023/10/31 22:56:19 by jjaroens         ###   ########.fr       */
+/*   Updated: 2023/11/01 22:35:47 by jjaroens         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,4 +27,6 @@
 // }   t_list;
 
 char	*get_next_line(int fd);
+char 	*ft_strjoin(char *s1, char *s2);
+size_t	ft_strlen(char const *s);
 #endif
