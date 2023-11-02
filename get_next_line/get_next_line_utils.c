@@ -6,7 +6,7 @@
 /*   By: jjaroens <jjaroens@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 21:38:50 by jjaroens          #+#    #+#             */
-/*   Updated: 2023/11/02 23:00:30 by jjaroens         ###   ########.fr       */
+/*   Updated: 2023/11/02 23:01:22 by jjaroens         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ char *ft_strchr(const char *s, int c)
 	unsigned char	i;
 
 	i = (unsigned char)c;
-	if (!s || c)
+	if (!s || !c)
 		return (NULL);
 	while (*s != '\0')
 	{
