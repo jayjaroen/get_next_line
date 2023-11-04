@@ -6,41 +6,40 @@
 /*   By: jjaroens <jjaroens@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 21:47:38 by jjaroens          #+#    #+#             */
-/*   Updated: 2023/11/02 23:00:19 by jjaroens         ###   ########.fr       */
+/*   Updated: 2023/11/04 17:52:33 by jjaroens         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-/*
-1. Read from the file (not over the give buffer size)
-2. Malloc the given buffer size & store
-3. Read from the buffer until finding '\n' && save the reminder (get the line?)
-4. Read and store from the file
-Read the line to the output
-Functions that need to be created
-*/
-char *update_buffer(char *buffer)
+#include <stdio.h>
+
+char	*update_buffer(char *buffer)
 {
-	//free buffer in the line function
 	size_t	i;
+	char	*line;
+	char	*ptr;
+	char	*tmp;
 
 	if (buffer == NULL)
 		return (NULL);
-	i = 0;
-	while (buffer[i] && buffer[i] != '\n')
-	{
-		free(buffer[i]);
-		i++;
-	}
-	return (buffer);
+	ptr = ft_strchr(buffer, '\n');
+	line = (char *)malloc(ft_strlen(ptr + 1) * sizeof(char));
+	if (line == NULL)
+		return (NULL);
+	tmp = line;
+	while (*ptr)
+		*(line++) = *(ptr++);
+	*line = '\0';
+	free(buffer);
+	return(tmp);
 }
 
-char *get_line(char *buffer)
+char	*get_line(char *buffer)
 {
 	char	*line;
 	size_t	i;
 
-	if (!buffer)
+	if (buffer == NULL)
 		return (NULL);
 	i = 0;
 	while (buffer[i] && buffer[i] != '\n')
@@ -48,16 +47,30 @@ char *get_line(char *buffer)
 	line = (char *)malloc(sizeof(char) * (i + 1));
 	i = 0;
 	while (buffer[i] && buffer[i] != '\n')
-		line[i++] = buffer[i++];
+	{
+		line[i] = buffer[i];
+		i++;
+	}
 	line[i] = '\0';
 	return (line);
 }
 
-char *read_buffer(int fd, char *buffer)
+char	*ft_join(char *buffer, char *tmp)
+{
+	char	*ptr;
+	
+	ptr = ft_strjoin(buffer, tmp);
+	free(buffer);
+	return (ptr);
+}
+
+char	*read_buffer(int fd, char *buffer)
 {
 	char	*tmp;
-	int		byte;
+	size_t	byte;
 
+	if (buffer == NULL)
+		buffer = (char *)(ft_calloc(1, 1));
 	tmp = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (tmp == NULL)
 		return (NULL);
@@ -65,27 +78,31 @@ char *read_buffer(int fd, char *buffer)
 	while (byte > 0)
 	{
 		byte = read(fd, tmp, BUFFER_SIZE);
-		if (byte <= 0) // does not read anything?// while setting to -1
+		if (byte <= 0)
+		{
+			free(tmp);
 			return (NULL);
-    	tmp[byte] = '\0'; // ensure that it's null terminated oor 0??
-		// joining buffer ///
-		buffer = ft_strjoin(buffer, tmp);
-		free(tmp);
-		if (ft_strchr(buffer, '\n'))
+		}
+		tmp[byte] = '\0';
+		buffer = ft_join(buffer, tmp); 
+		if (ft_strchr(tmp, '\n'))
 			break ;
-	}
+		free(tmp);
+	}	
 	return (buffer);
 }
 
-char *get_next_line(int fd)
+char	*get_next_line(int fd)
 {
 	static char	*buffer;
-	char	*line;
+	char		*line;
 
-	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, buffer, BUFFER_SIZE) <= 0)
+	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	buffer = read_buffer(fd, buffer); // update the buffer
+	buffer = read_buffer(fd, buffer);
 	if (buffer == NULL)
 		return (NULL);
-	line = get_line(buffer);//get line from the buffer
+	line = get_line(buffer);
+	buffer = update_buffer(buffer);
+	return (line);
 }

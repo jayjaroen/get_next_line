@@ -6,20 +6,44 @@
 /*   By: jjaroens <jjaroens@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 21:38:50 by jjaroens          #+#    #+#             */
-/*   Updated: 2023/11/02 23:01:22 by jjaroens         ###   ########.fr       */
+/*   Updated: 2023/11/04 17:03:26 by jjaroens         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <stdio.h>
-#include <stdlib.h> // why not linking to the header file
 
-char *ft_strchr(const char *s, int c)
+void	ft_bzero(void *s, size_t n)
+{
+	size_t			i;
+	unsigned char	*ptr;
+
+	i = 0;
+	ptr = (unsigned char *)s;
+	while (i < n)
+	{
+		*ptr = 0;
+		ptr++;
+		i++;
+	}
+}
+
+void	*ft_calloc(size_t count, size_t size)
+{
+	void	*str;
+
+	str = (void *)malloc(count * size);
+	if (str == NULL)
+		return (NULL);
+	ft_bzero(str, (count * size));
+	return (str);
+}
+
+char	*ft_strchr(const char *s, int c)
 {
 	unsigned char	i;
 
 	i = (unsigned char)c;
-	if (!s || !c)
+	if (!s)
 		return (NULL);
 	while (*s != '\0')
 	{
@@ -32,7 +56,7 @@ char *ft_strchr(const char *s, int c)
 	return (NULL);
 }
 
-size_t ft_strlen(const char *s)
+size_t	ft_strlen(const char *s)
 {
 	size_t	i;
 
@@ -47,19 +71,30 @@ size_t ft_strlen(const char *s)
 	return (i);
 }
 
-char  *ft_strjoin(char *s1, char *s2)
+char	*ft_strjoin(char *s1, char *s2)
 {
 	char	*new;
-	char	*ptr;
+	size_t	i;
+	size_t	j;
 
+	if (!s1 && !s2)
+		return (NULL);
 	new = (char *)malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
-	ptr = new;
 	if (new == NULL)
 		return (NULL);
-	while (*s1)
-		*(new++) = *(s1++);
-	while (*s2)
-		*(new++) = *(s2++);
-	*new = '\0';
-	return (ptr);
+	i = 0;
+	while (s1[i])
+	{
+		new[i] = s1[i];
+		i++;
+	}
+	j = 0;
+	while (s2[j])
+	{
+		new[i] = s2[j];
+		i++;
+		j++;
+	}
+	new[i] = '\0';
+	return (new);
 }
