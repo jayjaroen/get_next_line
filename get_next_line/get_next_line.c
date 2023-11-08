@@ -6,7 +6,7 @@
 /*   By: jjaroens <jjaroens@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 21:47:38 by jjaroens          #+#    #+#             */
-/*   Updated: 2023/11/04 17:52:33 by jjaroens         ###   ########.fr       */
+/*   Updated: 2023/11/08 22:11:50 by jjaroens         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,23 +15,25 @@
 
 char	*update_buffer(char *buffer)
 {
-	size_t	i;
 	char	*line;
 	char	*ptr;
 	char	*tmp;
 
-	if (buffer == NULL)
+	if (!buffer)
 		return (NULL);
 	ptr = ft_strchr(buffer, '\n');
-	line = (char *)malloc(ft_strlen(ptr + 1) * sizeof(char));
+	ptr++;
+	line = (char *)malloc((ft_strlen(ptr) + 1) * sizeof(char));
 	if (line == NULL)
+	{
+		free(buffer);
 		return (NULL);
+	}
 	tmp = line;
 	while (*ptr)
 		*(line++) = *(ptr++);
-	*line = '\0';
 	free(buffer);
-	return(tmp);
+	return (tmp);
 }
 
 char	*get_line(char *buffer)
@@ -39,9 +41,9 @@ char	*get_line(char *buffer)
 	char	*line;
 	size_t	i;
 
-	if (buffer == NULL)
-		return (NULL);
 	i = 0;
+	if (!buffer[i])
+		return (NULL);
 	while (buffer[i] && buffer[i] != '\n')
 		i++;
 	line = (char *)malloc(sizeof(char) * (i + 1));
@@ -51,14 +53,15 @@ char	*get_line(char *buffer)
 		line[i] = buffer[i];
 		i++;
 	}
-	line[i] = '\0';
+	if (buffer[i] && buffer[i] == '\n')
+		line[i] = '\n';
 	return (line);
 }
 
 char	*ft_join(char *buffer, char *tmp)
 {
 	char	*ptr;
-	
+
 	ptr = ft_strjoin(buffer, tmp);
 	free(buffer);
 	return (ptr);
@@ -67,9 +70,9 @@ char	*ft_join(char *buffer, char *tmp)
 char	*read_buffer(int fd, char *buffer)
 {
 	char	*tmp;
-	size_t	byte;
+	int		byte;
 
-	if (buffer == NULL)
+	if (!buffer)
 		buffer = (char *)(ft_calloc(1, 1));
 	tmp = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (tmp == NULL)
@@ -78,17 +81,18 @@ char	*read_buffer(int fd, char *buffer)
 	while (byte > 0)
 	{
 		byte = read(fd, tmp, BUFFER_SIZE);
-		if (byte <= 0)
+		if (byte == -1 || byte == 0)
 		{
 			free(tmp);
+			free(buffer);
 			return (NULL);
 		}
-		tmp[byte] = '\0';
-		buffer = ft_join(buffer, tmp); 
+		tmp[byte] = 0;
+		buffer = ft_join(buffer, tmp);
 		if (ft_strchr(tmp, '\n'))
 			break ;
-		free(tmp);
-	}	
+	}
+	free(tmp);
 	return (buffer);
 }
 
@@ -97,7 +101,7 @@ char	*get_next_line(int fd)
 	static char	*buffer;
 	char		*line;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
 		return (NULL);
 	buffer = read_buffer(fd, buffer);
 	if (buffer == NULL)

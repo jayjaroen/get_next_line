@@ -6,7 +6,7 @@
 /*   By: jjaroens <jjaroens@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 21:30:52 by jjaroens          #+#    #+#             */
-/*   Updated: 2023/11/04 14:50:14 by jjaroens         ###   ########.fr       */
+/*   Updated: 2023/11/08 21:00:37 by jjaroens         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,6 @@
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 42
 # endif
-// typedef struct s_struct
-// {
-//     char    *buffer;
-//     struct s_struct    *next;
-// }   t_list;
 
 char	*get_next_line(int fd);
 char	*ft_strjoin(char *s1, char *s2);

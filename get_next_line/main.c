@@ -12,14 +12,15 @@
 int main (void)
 {
     char *line;
-    int fd = open ("test.txt", O_RDONLY);
-    // while (1)
-    // {
-        line = get_next_line(fd);
-        // if (!line)
-        //     break ;
-        printf ("%s\n", line);
-    //     free (line);
-    // }
+    int fd = open("test.txt", O_RDONLY);
+	int	i = 100;
+
+    while (i)
+    {
+		line = get_next_line(fd);
+        printf("%s\n", line);
+        free(line);
+		i--;
+    }
     return (0);
 }
