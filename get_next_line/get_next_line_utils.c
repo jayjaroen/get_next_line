@@ -6,7 +6,7 @@
 /*   By: jjaroens <jjaroens@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 21:38:50 by jjaroens          #+#    #+#             */
-/*   Updated: 2023/11/08 21:00:15 by jjaroens         ###   ########.fr       */
+/*   Updated: 2023/11/16 21:30:34 by jjaroens         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,12 +45,8 @@ char	*ft_strchr(const char *s, int c)
 	i = (unsigned char)c;
 	if (!s)
 		return (NULL);
-	while (*s != '\0')
-	{
-		if (*s == i)
-			return ((char *)s);
+	while (*s != '\0' && *s != i)
 		s++;
-	}
 	if (*s == i)
 		return ((char *)s);
 	return (NULL);
@@ -71,30 +67,28 @@ size_t	ft_strlen(const char *s)
 	return (i);
 }
 
-char	*ft_strjoin(char *s1, char *s2)
+char	*ft_strjoin(const char *s1, const char *s2)
 {
 	char	*new;
 	size_t	i;
 	size_t	j;
 
-	if (!s1 && !s2)
-		return (NULL);
 	new = (char *)malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
-	if (new == NULL)
+	if (!s1 || !s2 || !new)
 		return (NULL);
 	i = 0;
-	while (s1[i])
+	while (s1[i] != 0)
 	{
 		new[i] = s1[i];
 		i++;
 	}
 	j = 0;
-	while (s2[j])
+	while (s2[j] != 0)
 	{
 		new[i] = s2[j];
 		i++;
 		j++;
 	}
-	new[i] = '\0';
+	new[i] = 0;
 	return (new);
 }

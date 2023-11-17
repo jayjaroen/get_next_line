@@ -6,12 +6,12 @@
 /*   By: jjaroens <jjaroens@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 21:47:38 by jjaroens          #+#    #+#             */
-/*   Updated: 2023/11/08 22:11:50 by jjaroens         ###   ########.fr       */
+/*   Updated: 2023/11/16 22:37:09 by jjaroens         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <stdio.h>
+#include <ctype.h>
 
 char	*update_buffer(char *buffer)
 {
@@ -73,7 +73,11 @@ char	*read_buffer(int fd, char *buffer)
 	int		byte;
 
 	if (!buffer)
-		buffer = (char *)(ft_calloc(1, 1));
+    {
+        buffer = (char *)malloc((sizeof(char)) * 1);
+        *buffer = 0;
+    }
+		// buffer = (char *)(ft_calloc(1, 1));
 	tmp = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (tmp == NULL)
 		return (NULL);
@@ -81,10 +85,9 @@ char	*read_buffer(int fd, char *buffer)
 	while (byte > 0)
 	{
 		byte = read(fd, tmp, BUFFER_SIZE);
-		if (byte == -1 || byte == 0)
+		if (byte == -1)
 		{
 			free(tmp);
-			free(buffer);
 			return (NULL);
 		}
 		tmp[byte] = 0;
