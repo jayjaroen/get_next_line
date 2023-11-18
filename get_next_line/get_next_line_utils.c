@@ -6,37 +6,37 @@
 /*   By: jjaroens <jjaroens@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 21:38:50 by jjaroens          #+#    #+#             */
-/*   Updated: 2023/11/16 21:30:34 by jjaroens         ###   ########.fr       */
+/*   Updated: 2023/11/18 17:14:44 by jjaroens         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-void	ft_bzero(void *s, size_t n)
-{
-	size_t			i;
-	unsigned char	*ptr;
+// void	ft_bzero(void *s, size_t n)
+// {
+// 	size_t			i;
+// 	unsigned char	*ptr;
 
-	i = 0;
-	ptr = (unsigned char *)s;
-	while (i < n)
-	{
-		*ptr = 0;
-		ptr++;
-		i++;
-	}
-}
+// 	i = 0;
+// 	ptr = (unsigned char *)s;
+// 	while (i < n)
+// 	{
+// 		*ptr = 0;
+// 		ptr++;
+// 		i++;
+// 	}
+// }
 
-void	*ft_calloc(size_t count, size_t size)
-{
-	void	*str;
+// void	*ft_calloc(size_t count, size_t size)
+// {
+// 	void	*str;
 
-	str = (void *)malloc(count * size);
-	if (str == NULL)
-		return (NULL);
-	ft_bzero(str, (count * size));
-	return (str);
-}
+// 	str = (void *)malloc(count * size);
+// 	if (str == NULL)
+// 		return (NULL);
+// 	ft_bzero(str, (count * size));
+// 	return (str);
+// }
 
 char	*ft_strchr(const char *s, int c)
 {

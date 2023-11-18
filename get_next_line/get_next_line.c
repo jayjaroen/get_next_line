@@ -6,12 +6,11 @@
 /*   By: jjaroens <jjaroens@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 21:47:38 by jjaroens          #+#    #+#             */
-/*   Updated: 2023/11/16 22:37:09 by jjaroens         ###   ########.fr       */
+/*   Updated: 2023/11/18 17:34:44 by jjaroens         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <ctype.h>
 
 char	*update_buffer(char *buffer)
 {
@@ -19,19 +18,17 @@ char	*update_buffer(char *buffer)
 	char	*ptr;
 	char	*tmp;
 
-	if (!buffer)
+	if (buffer == NULL)
 		return (NULL);
 	ptr = ft_strchr(buffer, '\n');
 	ptr++;
-	line = (char *)malloc((ft_strlen(ptr) + 1) * sizeof(char));
+	line = malloc(sizeof(char) * (ft_strlen(ptr) + 1));
 	if (line == NULL)
-	{
-		free(buffer);
 		return (NULL);
-	}
 	tmp = line;
 	while (*ptr)
 		*(line++) = *(ptr++);
+	*(line++) = '\0';
 	free(buffer);
 	return (tmp);
 }
@@ -42,60 +39,99 @@ char	*get_line(char *buffer)
 	size_t	i;
 
 	i = 0;
-	if (!buffer[i])
+	if (buffer == NULL)
 		return (NULL);
 	while (buffer[i] && buffer[i] != '\n')
 		i++;
-	line = (char *)malloc(sizeof(char) * (i + 1));
+	line = malloc(sizeof(char) * (i + 2));
+	if (line == NULL)
+		return (NULL);
 	i = 0;
-	while (buffer[i] && buffer[i] != '\n')
+	while (buffer[i] && buffer[i] != '\n') // can replace with strcpy?
 	{
 		line[i] = buffer[i];
 		i++;
 	}
-	if (buffer[i] && buffer[i] == '\n')
+	if (buffer[i] == '\n')
+	{
 		line[i] = '\n';
+		i++;
+	}
+	line[i] = '\0';
 	return (line);
 }
 
-char	*ft_join(char *buffer, char *tmp)
+char	*ft_join(char *tmp, char *str)
 {
 	char	*ptr;
 
-	ptr = ft_strjoin(buffer, tmp);
-	free(buffer);
+	ptr = ft_strjoin(tmp, str);
+	free(str);
+	free(tmp);
+	str = NULL;
+	tmp = NULL;
 	return (ptr);
 }
 
-char	*read_buffer(int fd, char *buffer)
-{
-	char	*tmp;
-	int		byte;
+// char	*read_buffer(int fd, char *buffer)
+// {
+// 	char	*tmp;
+// 	int		byte;
 
-	if (!buffer)
-    {
-        buffer = (char *)malloc((sizeof(char)) * 1);
-        *buffer = 0;
-    }
-		// buffer = (char *)(ft_calloc(1, 1));
-	tmp = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
-	if (tmp == NULL)
-		return (NULL);
-	byte = 1;
-	while (byte > 0)
+// 	if (!buffer)
+//     {
+//         buffer = (char *)malloc(sizeof(char));
+//         buffer[0] = '\0';
+//     }
+// 		// buffer = (char *)(ft_calloc(1, 1));
+// 	tmp = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
+// 	if (tmp == NULL)
+// 		return (NULL);
+// 	byte = 1;
+// 	while (byte > 0)
+// 	{
+// 		byte = read(fd, tmp, BUFFER_SIZE);
+// 		if (byte == -1)
+// 		{
+// 			free(tmp);
+// 			return (NULL);
+// 		}
+// 		tmp[byte] = 0;
+// 		buffer = ft_join(buffer, tmp);
+// 		if (ft_strchr(tmp, '\n') || byte == 0)
+// 			break ;
+// 	}
+// 	free(tmp);
+// 	return (buffer);
+// }
+char	*read_buffer(int fd, char *buffer, char *str, char *tmp)
+{
+	int	byte_read;
+	
+	while (1)
 	{
-		byte = read(fd, tmp, BUFFER_SIZE);
-		if (byte == -1)
+		byte_read = read(fd, str, BUFFER_SIZE);
+		if (byte_read == -1)
 		{
-			free(tmp);
+			free(str);
 			return (NULL);
 		}
-		tmp[byte] = 0;
-		buffer = ft_join(buffer, tmp);
-		if (ft_strchr(tmp, '\n'))
+		str[byte_read] = '\0';
+		tmp = buffer;
+		if (tmp == NULL)
+		{
+			tmp = malloc(sizeof(char) * 1);
+			if (tmp == NULL)
+			{
+				free(str);
+				return (NULL);
+			}
+			tmp[0] = '\0';
+		}
+		buffer = ft_join(tmp, str);
+		if (ft_strchr(buffer, '\n') || byte_read == 0)
 			break ;
 	}
-	free(tmp);
 	return (buffer);
 }
 
@@ -103,12 +139,22 @@ char	*get_next_line(int fd)
 {
 	static char	*buffer;
 	char		*line;
-
-	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
+	char		*str;
+	char		*tmp;
+	
+	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) == -1 || fd == STDIN_FILENO 
+	|| fd == STDERR_FILENO)
 		return (NULL);
-	buffer = read_buffer(fd, buffer);
+	str = malloc(sizeof(char) * BUFFER_SIZE + 1);
+	if (str == NULL)
+		return (NULL);
+	tmp = NULL;
+	buffer = read_buffer(fd, buffer, str, tmp);
 	if (buffer == NULL)
+	{
+		free(str);
 		return (NULL);
+	}
 	line = get_line(buffer);
 	buffer = update_buffer(buffer);
 	return (line);

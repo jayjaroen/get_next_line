@@ -14,14 +14,16 @@ int main (void)
 {
     char *line;
     int fd = open("test.txt", O_RDONLY);
-	int	i = 100;
 
-    while (i)
+    printf("hiiiii");
+    while (1)
     {
-		line = get_next_line(fd);
+        line = get_next_line(fd);
+        if (line == NULL)
+            break ;
         printf("%s\n", line);
         free(line);
-		i--;
     }
+    // printf("this is the main function call: %s\n", line = get_next_line(fd));
     return (0);
 }
