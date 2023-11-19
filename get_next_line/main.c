@@ -14,8 +14,8 @@ int main (void)
 {
     char *line;
     int fd = open("test.txt", O_RDONLY);
-
-    printf("hiiiii");
+/// open (0) //stdin --> write test
+// fd =0;
     while (1)
     {
         line = get_next_line(fd);
