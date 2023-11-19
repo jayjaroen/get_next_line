@@ -6,20 +6,18 @@
 /*   By: jjaroens <jjaroens@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 21:47:38 by jjaroens          #+#    #+#             */
-/*   Updated: 2023/11/19 17:26:00 by jjaroens         ###   ########.fr       */
+/*   Updated: 2023/11/19 22:47:46 by jjaroens         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char	*update_buffer(char *buffer, int *byte_read)
+char	*update_buffer(char *buffer)
 {
 	char	*update;
 	char	*ptr;
 	char	*tmp;
-	
-	if (*byte_read == 0)
-		return (NULL);
+
 	ptr = ft_strchr(buffer, '\n');
 	if (ptr == NULL)
 		return (NULL);
@@ -31,7 +29,7 @@ char	*update_buffer(char *buffer, int *byte_read)
 	while (*ptr)
 		*(update++) = *(ptr++);
 	*(update) = '\0';
-	free(buffer);	
+	free(buffer);
 	return (tmp);
 }
 
@@ -41,6 +39,11 @@ char *get_line(char *buffer)
 	int i;
 
 	i = 0;
+	if (!buffer[i])
+	{
+		free(buffer);
+		return (NULL);
+	}
 	while (buffer[i] && buffer[i] != '\n')
 		i++;
 	/// find '\n\ && not the end of file + malloc size
@@ -63,17 +66,7 @@ char *get_line(char *buffer)
 	else
 	{
 		line = buffer;
-		// line = malloc(sizeof(char) * (i + 1));
-		// if (line == NULL)
-		// 	return (NULL);
-		// i = 0;
-		// while (buffer[i] != '\0')
-		// {
-		// line[i] = buffer[i];
-		// 	i++;
-		// }
-		// line[i] = '\0';
-	}	
+	}
 return (line);
 }
 
@@ -82,27 +75,24 @@ char *ft_join(char *tmp, char *str)
 	char	*ptr;
 
 	ptr = ft_strjoin(tmp, str);
-	// free(str);
 	free(tmp);
-	// str = NULL;
-	// tmp = NULL;
 	return (ptr);
 }
 
 char *read_buffer(int fd, char *buffer, char *str, int *byte_read)
 {
 	char	*tmp;
-	
+
 	while (1)
 	{
 		*byte_read = read(fd, str, BUFFER_SIZE);
-		if (*byte_read == 0)
+		if (*byte_read == 0 || *byte_read == -1)
 			break ;
-		if (*byte_read == -1)
-		{
-			// free(buffer);
-			return (NULL);
-		}
+		// if (*byte_read == -1)
+		// {
+		// 	// free(buffer);
+		// 	break ;
+		// }
 		str[*byte_read] = '\0';
 		tmp = buffer;
 		if (tmp == NULL)
@@ -128,7 +118,7 @@ char *get_next_line(int fd)
 	char		*line;
 	char		*ptr;
 	int			byte_read;
-	
+
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
 	ptr = ft_strchr(buffer, '\n');
@@ -143,7 +133,7 @@ char *get_next_line(int fd)
 			return (NULL);
 	}
 	line = get_line(buffer);
-	buffer = update_buffer(buffer, &byte_read); /// byte_read == 0 
+	buffer = update_buffer(buffer);
 	return (line);
 }
 
@@ -153,7 +143,7 @@ char *get_next_line(int fd)
 // 	char	*update;
 // 	char	*ptr;
 // 	char	*tmp;
-	
+
 // 	ptr = ft_strchr(buffer, '\n');
 // 	// return NULL - don't keep the value
 // 	if (ptr == NULL)
@@ -166,7 +156,7 @@ char *get_next_line(int fd)
 // 	while (*ptr)
 // 		*(update++) = *(ptr++);
 // 	*(update) = '\0';
-// 	free(buffer);	
+// 	free(buffer);
 // 	return (tmp);
 // }
 
@@ -208,7 +198,7 @@ char *get_next_line(int fd)
 // 		// 	i++;
 // 		// }
 // 		// line[i] = '\0';
-// 	}	
+// 	}
 // return (line);
 // }
 
@@ -227,7 +217,7 @@ char *get_next_line(int fd)
 // char *read_buffer(int fd, char *buffer, char *str, char *tmp)
 // {
 // 	int	byte_read;
-	
+
 // 	while (1)
 // 	{
 // 		byte_read = read(fd, str, BUFFER_SIZE);
@@ -263,7 +253,7 @@ char *get_next_line(int fd)
 // 	char		*tmp;
 // 	char		*line;
 // 	char		*ptr;
-	
+
 // 	if (fd < 0 || BUFFER_SIZE <= 0)
 // 		return (NULL);
 // 	ptr = ft_strchr(buffer, '\n');
@@ -279,7 +269,7 @@ char *get_next_line(int fd)
 // 			return (NULL);
 // 	}
 // 	line = get_line(buffer);
-// 	buffer = update_buffer(buffer); /// byte_read == 0 
+// 	buffer = update_buffer(buffer); /// byte_read == 0
 // 	return (line);
 // }
 /*-----------------------------------------------PREVIOUS--------------------------------------*/
@@ -378,7 +368,7 @@ char *get_next_line(int fd)
 // char	*read_buffer(int fd, char *buffer, char *str, char *tmp)
 // {
 // 	int	byte_read;
-	
+
 // 	while (1)
 // 	{
 // 		byte_read = read(fd, str, BUFFER_SIZE);
@@ -412,8 +402,8 @@ char *get_next_line(int fd)
 // 	char		*line;
 // 	char		*str;
 // 	char		*tmp;
-	
-// 	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) == -1 || fd == STDIN_FILENO 
+
+// 	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) == -1 || fd == STDIN_FILENO
 // 	|| fd == STDERR_FILENO)
 // 		return (NULL);
 // 	str = malloc(sizeof(char) * BUFFER_SIZE + 1);
