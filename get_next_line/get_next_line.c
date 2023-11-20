@@ -6,7 +6,7 @@
 /*   By: jjaroens <jjaroens@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 21:47:38 by jjaroens          #+#    #+#             */
-/*   Updated: 2023/11/19 22:47:46 by jjaroens         ###   ########.fr       */
+/*   Updated: 2023/11/20 22:42:48 by jjaroens         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ char	*update_buffer(char *buffer)
 	return (tmp);
 }
 
-char *get_line(char *buffer)
+char *ft_line(char *buffer)
 {
 	char *line;
 	int i;
@@ -41,12 +41,11 @@ char *get_line(char *buffer)
 	i = 0;
 	if (!buffer[i])
 	{
-		free(buffer);
-		return (NULL);
+		// free(buffer);
+		return (free(buffer),NULL);
 	}
 	while (buffer[i] && buffer[i] != '\n')
 		i++;
-	/// find '\n\ && not the end of file + malloc size
 	if (buffer[i] == '\n')
 	{
 		line = malloc(sizeof(char) * (i + 2));
@@ -61,12 +60,8 @@ char *get_line(char *buffer)
 		line[i] = '\n';
 		line[i + 1] = '\0';
 	}
-	/// end of file
-	// else if (buffer[i] == '\0')
 	else
-	{
-		line = buffer;
-	}
+		line = buffer; // check this again?
 return (line);
 }
 
@@ -79,21 +74,17 @@ char *ft_join(char *tmp, char *str)
 	return (ptr);
 }
 
-char *read_buffer(int fd, char *buffer, char *str, int *byte_read)
+char *read_buffer(int fd, char *buffer, char *str)
 {
 	char	*tmp;
+	int   	byte_read;
 
 	while (1)
 	{
-		*byte_read = read(fd, str, BUFFER_SIZE);
-		if (*byte_read == 0 || *byte_read == -1)
+		byte_read = read(fd, str, BUFFER_SIZE);
+		if (byte_read == 0 || byte_read == -1)
 			break ;
-		// if (*byte_read == -1)
-		// {
-		// 	// free(buffer);
-		// 	break ;
-		// }
-		str[*byte_read] = '\0';
+		str[byte_read] = '\0';
 		tmp = buffer;
 		if (tmp == NULL)
 		{
@@ -117,7 +108,6 @@ char *get_next_line(int fd)
 	char		*str;
 	char		*line;
 	char		*ptr;
-	int			byte_read;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
@@ -127,12 +117,12 @@ char *get_next_line(int fd)
 		str = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 		if (str == NULL)
 			return (NULL);
-		buffer = read_buffer(fd, buffer, str, &byte_read);
+		buffer = read_buffer(fd, buffer, str);
 		free(str);
 		if (buffer == NULL)
 			return (NULL);
 	}
-	line = get_line(buffer);
+	line = ft_line(buffer);
 	buffer = update_buffer(buffer);
 	return (line);
 }
