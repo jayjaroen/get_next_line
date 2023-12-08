@@ -28,5 +28,6 @@ int main (void)
         free(line);
     }
     // printf("this is the main function call: %s\n", line = get_next_line(fd));
+    free(line);
     return (0);
 }

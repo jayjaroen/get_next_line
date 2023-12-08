@@ -6,20 +6,22 @@
 /*   By: jjaroens <jjaroens@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 21:47:38 by jjaroens          #+#    #+#             */
-/*   Updated: 2023/12/08 20:36:54 by jjaroens         ###   ########.fr       */
+/*   Updated: 2023/12/08 22:49:32 by jjaroens         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
 //check on update_buffer --> ptr null --> print line (already in the line function)
+// for the update buffer --> check line 24 && 25 (if the buffer has no '\n', it should already print out in the line?)
+// check line 59
 char	*update_buffer(char *buffer)
 {
 	char	*update;
 	char	*ptr;
 	char	*tmp;
 
-	ptr = ft_strchr(buffer, '\n');
+  	ptr = ft_strchr(buffer, '\n');
 	if (ptr == NULL) // if there is no "/n" -> also print out in line?
 		return (NULL);
 	ptr++;
@@ -103,12 +105,12 @@ char	*get_next_line(int fd)
 	static char	*buffer;
 	char		*str;
 	char		*line;
-	char		*ptr;
+	// char		*ptr;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	ptr = ft_strchr(buffer, '\n');
-	if (ptr == NULL)
+	// ptr = ft_strchr(buffer, '\n');
+	if (ft_strchr(buffer, '\n') == NULL)
 	{
 		str = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 		if (str == NULL)
@@ -118,7 +120,7 @@ char	*get_next_line(int fd)
 		if (buffer == NULL)
 			return (NULL);
 	}
-	line = ft_line(buffer);
+  line = ft_line(buffer);
 	buffer = update_buffer(buffer);
 	return (line);
 }
