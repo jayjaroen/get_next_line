@@ -1,18 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jjaroens <jjaroens@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/10/20 21:47:38 by jjaroens          #+#    #+#             */
-/*   Updated: 2023/12/08 20:36:54 by jjaroens         ###   ########.fr       */
+/*   Created: 2023/12/06 20:07:37 by jjaroens          #+#    #+#             */
+/*   Updated: 2023/12/08 20:27:09 by jjaroens         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
-//check on update_buffer --> ptr null --> print line (already in the line function)
 char	*update_buffer(char *buffer)
 {
 	char	*update;
@@ -41,7 +40,10 @@ char	*ft_line(char *buffer)
 
 	i = 0;
 	if (!buffer[i])
-		return (free(buffer), NULL);
+	{
+		free(buffer);
+		return (NULL);
+	}
 	while (buffer[i] && buffer[i] != '\n')
 		i++;
 	if (buffer[i] == '\n')
@@ -55,7 +57,7 @@ char	*ft_line(char *buffer)
 			line[i] = buffer[i];
 			i++;
 		}
-		line[i] = '\n'; //what if it is not the end of the file?
+		line[i] = '\n';
 		line[i + 1] = '\0';
 	}
 	else
@@ -63,16 +65,18 @@ char	*ft_line(char *buffer)
 	return (line);
 }
 
-char	*ft_join(char *tmp, char *str)
+char	*ft_join(char *s1, char *s2)
 {
-	char	*ptr;
+	char	*str;
 
-	ptr = ft_strjoin(tmp, str);
-	free(tmp);
-	return (ptr);
+	str = ft_strjoin(s1, s2);
+	if (str == NULL)
+		return (NULL);
+	free(s1);
+	return (str);
 }
 
-char	*read_buffer(int fd, char *buffer, char *str)
+char	*read_buffer(char *buffer, char *str, int fd)
 {
 	char	*tmp;
 	int		byte_read;
@@ -82,7 +86,7 @@ char	*read_buffer(int fd, char *buffer, char *str)
 		byte_read = read(fd, str, BUFFER_SIZE);
 		if (byte_read == 0 || byte_read == -1)
 			break ;
-		str[byte_read] = '\0';
+		str[BUFFER_SIZE] = '\0';
 		tmp = buffer;
 		if (tmp == NULL)
 		{
@@ -90,35 +94,38 @@ char	*read_buffer(int fd, char *buffer, char *str)
 			if (tmp == NULL)
 				return (NULL);
 			tmp[0] = '\0';
+			buffer = ft_join(buffer, str);
+			if (ft_strchr(buffer, '\n'))
+				break ;
 		}
-		buffer = ft_join(tmp, str);
-		if (ft_strchr(buffer, '\n') != NULL)
-			break ;
 	}
 	return (buffer);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*buffer;
-	char		*str;
+	static char	*buffer[OPEN_MAX];
 	char		*line;
+	char		*str;
 	char		*ptr;
+	//ptr to find the "\n" in buffer?
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	ptr = ft_strchr(buffer, '\n');
-	if (ptr == NULL)
+	//check if buffer is empty
+	ptr = ft_strchr(buffer[fd], '\n');
+	if (ptr == NULL) // not good if is a null? / could be empty buffer?
 	{
-		str = malloc(sizeof(char) * (BUFFER_SIZE + 1));
-		if (str == NULL)
-			return (NULL);
-		buffer = read_buffer(fd, buffer, str);
-		free(str);
-		if (buffer == NULL)
-			return (NULL);
+		//buffer = combined buffer + str
+    str = malloc(sizeof(char) * (BUFFER_SIZE + 1));
+    if (str == NULL)
+      return (NULL);
+	buffer[fd] = read_buffer(buffer[fd], str, fd);
+	free(str);
 	}
-	line = ft_line(buffer);
-	buffer = update_buffer(buffer);
+	line = ft_line(buffer[fd]);
+	//read line later,if not emply
+	//update buffer;
+	buffer[fd] = update_buffer(buffer[fd]);
 	return (line);
 }

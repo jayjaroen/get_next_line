@@ -20,7 +20,10 @@ int main (void)
     {
         line = get_next_line(fd);
         if (line == NULL)
+        {
+            // free(line);
             break ;
+        }
         printf("%s\n", line);
         free(line);
     }
