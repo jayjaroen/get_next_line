@@ -13,7 +13,7 @@
 int main (void)
 {
     char *line;
-    int fd = open("test.txt", O_RDONLY);
+    int fd = open("/Users/jjaroens/Desktop/githublib/get_next_line/get_next_line/tester/files/43_with_nl", O_RDONLY);
 /// open (0) //stdin --> write test
 // fd =0;
     while (1)
@@ -21,13 +21,13 @@ int main (void)
         line = get_next_line(fd);
         if (line == NULL)
         {
+            // printf("Hello\n");
             // free(line);
             break ;
         }
-        printf("%s\n", line);
+        printf("%s", line);
         free(line);
     }
     // printf("this is the main function call: %s\n", line = get_next_line(fd));
-    free(line);
     return (0);
 }

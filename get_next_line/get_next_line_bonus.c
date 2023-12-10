@@ -6,29 +6,33 @@
 /*   By: jjaroens <jjaroens@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 20:07:37 by jjaroens          #+#    #+#             */
-/*   Updated: 2023/12/08 20:27:09 by jjaroens         ###   ########.fr       */
+/*   Updated: 2023/12/10 15:19:56 by jjaroens         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line_bonus.h"
 
-char	*update_buffer(char *buffer)
+char	*update_buffer(char *buffer, int *byte_read)
 {
 	char	*update;
 	char	*ptr;
 	char	*tmp;
 
 	ptr = ft_strchr(buffer, '\n');
-	if (ptr == NULL) // if there is no "/n" -> also print out in line?
+	if (ptr == NULL)
 		return (NULL);
+	if (*byte_read == 0 && *ptr == '\0')
+	{
+		free(buffer);
+		return (NULL);
+	}
 	ptr++;
-	update = malloc(sizeof(char) * (ft_strlen(ptr) + 1));
+	update = ft_calloc((ft_strlen(ptr) + 1), sizeof(char));
 	if (update == NULL)
 		return (NULL);
 	tmp = update;
 	while (*ptr)
 		*(update++) = *(ptr++);
-	*(update) = '\0';
 	free(buffer);
 	return (tmp);
 }
@@ -48,56 +52,58 @@ char	*ft_line(char *buffer)
 		i++;
 	if (buffer[i] == '\n')
 	{
-		line = malloc(sizeof(char) * (i + 2));
+		line = ft_calloc((i + 2), sizeof(char));
 		if (line == NULL)
 			return (NULL);
-		i = 0;
-		while (buffer[i] != '\n')
-		{
+		i = -1;
+		while (buffer[++i] != '\n')
 			line[i] = buffer[i];
-			i++;
-		}
 		line[i] = '\n';
-		line[i + 1] = '\0';
 	}
 	else
 		line = buffer;
 	return (line);
 }
 
-char	*ft_join(char *s1, char *s2)
+char	*ft_join(char *tmp, char *str)
 {
-	char	*str;
+	char	*ptr;
 
-	str = ft_strjoin(s1, s2);
-	if (str == NULL)
-		return (NULL);
-	free(s1);
-	return (str);
+	ptr = ft_strjoin(tmp, str);
+	free(tmp);
+	return (ptr);
 }
 
-char	*read_buffer(char *buffer, char *str, int fd)
+char	*read_buffer(int fd, char *buffer, char *str, int *byte_read)
 {
 	char	*tmp;
-	int		byte_read;
+	// int		byte_read;
 
 	while (1)
 	{
-		byte_read = read(fd, str, BUFFER_SIZE);
-		if (byte_read == 0 || byte_read == -1)
+		*byte_read = read(fd, str, BUFFER_SIZE);
+		if (*byte_read == 0)
 			break ;
-		str[BUFFER_SIZE] = '\0';
+		if (*byte_read == -1)
+		{
+			if (buffer)
+				free(buffer);
+			buffer = NULL;
+			break ;
+		}
+		str[*byte_read] = '\0';
 		tmp = buffer;
 		if (tmp == NULL)
 		{
-			tmp = malloc(sizeof(char) * 1);
+			tmp = ft_calloc(1, sizeof(char));
 			if (tmp == NULL)
 				return (NULL);
-			tmp[0] = '\0';
-			buffer = ft_join(buffer, str);
-			if (ft_strchr(buffer, '\n'))
-				break ;
 		}
+		buffer = ft_join(tmp, str);
+		if (buffer == NULL)
+			return (NULL);
+		if (ft_strchr(buffer, '\n') != NULL)
+			break ;
 	}
 	return (buffer);
 }
@@ -105,27 +111,24 @@ char	*read_buffer(char *buffer, char *str, int fd)
 char	*get_next_line(int fd)
 {
 	static char	*buffer[OPEN_MAX];
-	char		*line;
 	char		*str;
-	char		*ptr;
-	//ptr to find the "\n" in buffer?
+	char		*line;
+	int			byte_read;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	//check if buffer is empty
-	ptr = ft_strchr(buffer[fd], '\n');
-	if (ptr == NULL) // not good if is a null? / could be empty buffer?
+	if (ft_strchr(buffer[fd], '\n') == NULL)
 	{
-		//buffer = combined buffer + str
-    str = malloc(sizeof(char) * (BUFFER_SIZE + 1));
-    if (str == NULL)
-      return (NULL);
-	buffer[fd] = read_buffer(buffer[fd], str, fd);
-	free(str);
+		str = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
+		if (str == NULL)
+			return (NULL);
+		byte_read = 0;
+		buffer[fd] = read_buffer(fd, buffer[fd], str, &byte_read);
+		free(str);
+		if (buffer[fd]== NULL)
+			return (NULL);
 	}
 	line = ft_line(buffer[fd]);
-	//read line later,if not emply
-	//update buffer;
-	buffer[fd] = update_buffer(buffer[fd]);
+	buffer[fd] = update_buffer(buffer[fd], &byte_read);
 	return (line);
 }

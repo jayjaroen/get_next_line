@@ -6,32 +6,33 @@
 /*   By: jjaroens <jjaroens@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 21:47:38 by jjaroens          #+#    #+#             */
-/*   Updated: 2023/12/08 22:49:32 by jjaroens         ###   ########.fr       */
+/*   Updated: 2023/12/10 17:27:33 by jjaroens         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-//check on update_buffer --> ptr null --> print line (already in the line function)
-// for the update buffer --> check line 24 && 25 (if the buffer has no '\n', it should already print out in the line?)
-// check line 59
-char	*update_buffer(char *buffer)
+char	*update_buffer(char *buffer, int *byte_read)
 {
 	char	*update;
 	char	*ptr;
 	char	*tmp;
 
-  	ptr = ft_strchr(buffer, '\n');
-	if (ptr == NULL) // if there is no "/n" -> also print out in line?
+	ptr = ft_strchr(buffer, '\n');
+	if (ptr == NULL)
 		return (NULL);
 	ptr++;
-	update = malloc(sizeof(char) * (ft_strlen(ptr) + 1));
+	if (*byte_read == 0 && *ptr == '\0')
+	{
+		free(buffer);
+		return (NULL);
+	}
+	update = ft_calloc((ft_strlen(ptr) + 1), sizeof(char));
 	if (update == NULL)
 		return (NULL);
 	tmp = update;
 	while (*ptr)
 		*(update++) = *(ptr++);
-	*(update) = '\0';
 	free(buffer);
 	return (tmp);
 }
@@ -43,22 +44,21 @@ char	*ft_line(char *buffer)
 
 	i = 0;
 	if (!buffer[i])
-		return (free(buffer), NULL);
+	{
+		free(buffer);
+		return (NULL);
+	}
 	while (buffer[i] && buffer[i] != '\n')
 		i++;
 	if (buffer[i] == '\n')
 	{
-		line = malloc(sizeof(char) * (i + 2));
+		line = ft_calloc((i + 2), sizeof(char));
 		if (line == NULL)
 			return (NULL);
-		i = 0;
-		while (buffer[i] != '\n')
-		{
+		i = -1;
+		while (buffer[++i] != '\n')
 			line[i] = buffer[i];
-			i++;
-		}
-		line[i] = '\n'; //what if it is not the end of the file?
-		line[i + 1] = '\0';
+		line[i] = '\n';
 	}
 	else
 		line = buffer;
@@ -74,26 +74,33 @@ char	*ft_join(char *tmp, char *str)
 	return (ptr);
 }
 
-char	*read_buffer(int fd, char *buffer, char *str)
+char	*read_buffer(int fd, char *buffer, char *str, int *byte_read)
 {
 	char	*tmp;
-	int		byte_read;
 
 	while (1)
 	{
-		byte_read = read(fd, str, BUFFER_SIZE);
-		if (byte_read == 0 || byte_read == -1)
+		*byte_read = read(fd, str, BUFFER_SIZE);
+		if (*byte_read == 0)
 			break ;
-		str[byte_read] = '\0';
+		if (*byte_read == -1)
+		{
+			if (buffer)
+				free(buffer);
+			buffer = NULL;
+			break ;
+		}
+		str[*byte_read] = '\0';
 		tmp = buffer;
 		if (tmp == NULL)
 		{
-			tmp = malloc(sizeof(char) * 1);
+			tmp = ft_calloc(1, sizeof(char));
 			if (tmp == NULL)
 				return (NULL);
-			tmp[0] = '\0';
 		}
 		buffer = ft_join(tmp, str);
+		if (buffer == NULL)
+			return (NULL);
 		if (ft_strchr(buffer, '\n') != NULL)
 			break ;
 	}
@@ -105,22 +112,22 @@ char	*get_next_line(int fd)
 	static char	*buffer;
 	char		*str;
 	char		*line;
-	// char		*ptr;
+	int			byte_read;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	// ptr = ft_strchr(buffer, '\n');
 	if (ft_strchr(buffer, '\n') == NULL)
 	{
-		str = malloc(sizeof(char) * (BUFFER_SIZE + 1));
+		str = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
 		if (str == NULL)
 			return (NULL);
-		buffer = read_buffer(fd, buffer, str);
+		buffer = read_buffer(fd, buffer, str, &byte_read);
 		free(str);
 		if (buffer == NULL)
 			return (NULL);
 	}
-  line = ft_line(buffer);
-	buffer = update_buffer(buffer);
+	line = ft_line(buffer);
+	buffer = update_buffer(buffer, &byte_read);
 	return (line);
 }
+

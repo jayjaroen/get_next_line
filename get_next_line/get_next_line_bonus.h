@@ -6,7 +6,7 @@
 /*   By: jjaroens <jjaroens@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 20:35:18 by jjaroens          #+#    #+#             */
-/*   Updated: 2023/12/08 16:54:49 by jjaroens         ###   ########.fr       */
+/*   Updated: 2023/12/10 13:45:15 by jjaroens         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,9 @@
 # include <stdlib.h>
 
 char	*get_next_line(int fd);
-size_t	ft_strlen(char *str);
-char	*ft_strchr(char *str, int c);
-char	*ft_strjoin(char *s1, char *s2);
+char	*ft_strjoin(const char *s1, const char *s2);
+size_t	ft_strlen(const char *s);
+char	*ft_strchr(const char *s, int c);
+void	*ft_calloc(size_t count, size_t size);
 
 #endif
