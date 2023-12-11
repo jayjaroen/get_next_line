@@ -6,13 +6,13 @@
 /*   By: jjaroens <jjaroens@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 21:47:38 by jjaroens          #+#    #+#             */
-/*   Updated: 2023/12/10 17:27:33 by jjaroens         ###   ########.fr       */
+/*   Updated: 2023/12/11 14:43:39 by jjaroens         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char	*update_buffer(char *buffer, int *byte_read)
+char	*update_buffer(char *buffer)
 {
 	char	*update;
 	char	*ptr;
@@ -21,12 +21,12 @@ char	*update_buffer(char *buffer, int *byte_read)
 	ptr = ft_strchr(buffer, '\n');
 	if (ptr == NULL)
 		return (NULL);
-	ptr++;
-	if (*byte_read == 0 && *ptr == '\0')
+	if (*ptr == '\n' && *(ptr + 1) == '\0')
 	{
 		free(buffer);
 		return (NULL);
 	}
+	ptr++;
 	update = ft_calloc((ft_strlen(ptr) + 1), sizeof(char));
 	if (update == NULL)
 		return (NULL);
@@ -43,15 +43,12 @@ char	*ft_line(char *buffer)
 	int		i;
 
 	i = 0;
-	if (!buffer[i])
-	{
-		free(buffer);
+	if (buffer == NULL)
 		return (NULL);
-	}
-	while (buffer[i] && buffer[i] != '\n')
-		i++;
-	if (buffer[i] == '\n')
+	if (ft_strchr(buffer, '\n') != NULL)
 	{
+		while (buffer[i] && buffer[i] != '\n')
+			i++;
 		line = ft_calloc((i + 2), sizeof(char));
 		if (line == NULL)
 			return (NULL);
@@ -76,29 +73,25 @@ char	*ft_join(char *tmp, char *str)
 
 char	*read_buffer(int fd, char *buffer, char *str, int *byte_read)
 {
-	char	*tmp;
-
 	while (1)
 	{
 		*byte_read = read(fd, str, BUFFER_SIZE);
 		if (*byte_read == 0)
 			break ;
-		if (*byte_read == -1)
+		if (*byte_read < 0)
 		{
 			if (buffer)
 				free(buffer);
-			buffer = NULL;
-			break ;
+			return (NULL);
 		}
 		str[*byte_read] = '\0';
-		tmp = buffer;
-		if (tmp == NULL)
+		if (buffer == NULL)
 		{
-			tmp = ft_calloc(1, sizeof(char));
-			if (tmp == NULL)
+			buffer = ft_calloc(1, sizeof(char));
+			if (buffer == NULL)
 				return (NULL);
 		}
-		buffer = ft_join(tmp, str);
+		buffer = ft_join(buffer, str);
 		if (buffer == NULL)
 			return (NULL);
 		if (ft_strchr(buffer, '\n') != NULL)
@@ -127,7 +120,24 @@ char	*get_next_line(int fd)
 			return (NULL);
 	}
 	line = ft_line(buffer);
-	buffer = update_buffer(buffer, &byte_read);
+	buffer = update_buffer(buffer);
 	return (line);
 }
-
+// #include <fcntl.h>
+// #include <stdio.h>
+// int main (void)
+// {
+//     char *line;
+//     int fd = open("test.txt", O_RDONLY);
+//     while (1)
+//     {
+//         line = get_next_line(fd);
+//         if (line == NULL)
+//         {
+//             break ;
+//         }
+//         printf("%s", line);
+//         free(line);
+//     }
+//     return (0);
+// }

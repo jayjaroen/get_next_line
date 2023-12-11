@@ -6,7 +6,7 @@
 /*   By: jjaroens <jjaroens@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 21:38:50 by jjaroens          #+#    #+#             */
-/*   Updated: 2023/12/10 17:09:57 by jjaroens         ###   ########.fr       */
+/*   Updated: 2023/12/11 14:46:43 by jjaroens         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,11 +43,11 @@ char	*ft_strchr(const char *s, int c)
 	unsigned char	i;
 	unsigned char	*str;
 
-	i = (unsigned char)c;
-	str = (unsigned char *)s;
 	if (!s)
 		return (NULL);
-	while (*str && *str != i)
+	i = (unsigned char)c;
+	str = (unsigned char *)s;
+	while (*str != '\0' && *str != i)
 		str++;
 	if (*str == i)
 		return ((char *)str);
@@ -94,4 +94,3 @@ char	*ft_strjoin(const char *s1, const char *s2)
 	new[i] = 0;
 	return (new);
 }
-
